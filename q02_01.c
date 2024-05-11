@@ -28,37 +28,69 @@ typedef struct {
     Student* students[100];
 } Dorm;
 
-Student students[100];
+Student students[MAX_STUDENTS];
+Dorm dorms[MAX_DORMS];
 int student_count = 0;
-
-Dorm* dorms = NULL;
-int dorm_count = 0; 
+int dorm_count = 0;
 
 void add_student(char* id, char* name, int year, char* gender) {
     strcpy(students[student_count].id, id);
     strcpy(students[student_count].name, name);
     students[student_count].year = year;
     strcpy(students[student_count].gender, gender);
+    strcpy(students[student_count].dorm, "unassigned");
     student_count++;
 }
 
 void add_dorm(char* name, int capacity, char* gender) { 
-    dorms = realloc(dorms, (dorm_count + 1) * sizeof(Dorm));
+    dorms realloc(dorms, (dorm_count + 1) * sizeof(Dorm));
     strcpy(dorms[dorm_count].name, name);
     dorms[dorm_count].capacity = capacity;
     strcpy(dorms[dorm_count].gender, gender);
+    dorms[dorm_count].current = 0;
     dorm_count++;
 } 
-  
+
+void assign_student(char* id, char* dorm_name) {
+    for (int i = 0; i < student_count; i++) {
+        if (strcmp(students[i].id, id) == 0) {
+            strcpy(students[i].dorm, dorm_name);
+            for (int j = 0; j < dorm_count; j++) {
+                if (strcmp(dorms[j].name, dorm_name) == 0) {
+                    dorms[j].current++;
+                }
+            }
+        }
+    }
+}
+
+void move_student(char* id, char* dorm_name) {
+    for (int i = 0; i < student_count; i++) {
+        if (strcmp(students[i].id, id) == 0) {
+            for (int j = 0; j < dorm_count; j++) {
+                if (strcmp(dorms[j].name, students[i].dorm) == 0) {
+                    dorms[j].current--;
+                }
+            }
+            strcpy(students[i].dorm, dorm_name);
+            for (int j = 0; j < dorm_count; j++) {
+                if (strcmp(dorms[j].name, dorm_name) == 0) {
+                    dorms[j].current++;
+                }
+            }
+        }
+    }
+}
+
 void print_all_students() {
     for (int i = 0; i < student_count; i++) {
-        printf("%s|%s|%d|%s\n", students[i].id, students[i].name, students[i].year, students[i].gender);
+        printf("%s|%s|%d|%s|%s\n", students[i].id, students[i].name, students[i].year, students[i].gender, students[i].dorm);
     }
 }
 
 void print_all_dorms() { 
     for (int i = 0; i < dorm_count; i++) { 
-        printf("%s|%d|%s\n", dorms[i].name, dorms[i].capacity, dorms[i].gender); 
+        printf("%s|%d|%s|%d\n", dorms[i].name, dorms[i].capacity, dorms[i].gender, dorms[i].current); 
     }
 }
 
